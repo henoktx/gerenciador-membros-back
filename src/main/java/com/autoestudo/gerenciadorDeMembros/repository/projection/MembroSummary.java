@@ -10,5 +10,5 @@ public interface MembroSummary {
     String getEndereco();
     LocalDate getDataNascimento();
     LocalDate getDataInclusao();
-    Long getDiaconoResponsavelId();
+    DiaconoSummary getDiaconoResponsavel();
 }
