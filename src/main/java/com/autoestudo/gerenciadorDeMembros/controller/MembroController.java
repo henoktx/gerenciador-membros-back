@@ -24,25 +24,28 @@ public class MembroController {
         this.membroRepository = membroRepository;
     }
 
-    @GetMapping
-    public ResponseEntity<Page<MembroSummary>> findAll(
-            @RequestParam("page") int page,
-            @RequestParam("size") int size
+    @GetMapping("/{id}")
+    public ResponseEntity<Optional<MembroSummary>> findById(
+            @PathVariable long id
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<MembroSummary> res = this.membroRepository.findBy(pageable, MembroSummary.class);
-        return ResponseEntity.ok(res);
+        Optional<MembroSummary> membro = this.membroRepository.findById(id, MembroSummary.class);
+
+        if (membro.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(membro);
+        }
     }
 
-    @GetMapping("/{nome}")
+    @GetMapping("/search")
     public ResponseEntity<Page<MembroSummary>> findByNome(
-            @PathVariable String nome,
+            @RequestParam("name") String nome,
             @RequestParam("page") int page,
             @RequestParam("size") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
 
-        Page<MembroSummary> membros = this.membroRepository.findByNomeCompletoContains(
+        Page<MembroSummary> membros = this.membroRepository.findByNomeCompletoContainsIgnoreCase(
                 pageable,
                 nome,
                 MembroSummary.class
@@ -51,7 +54,7 @@ public class MembroController {
         return ResponseEntity.ok(membros);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<MembroEntity> create(@RequestBody MembroCreateDTO novoMembro) {
         MembroEntity diaconoResponsavel = null;
 
@@ -78,7 +81,7 @@ public class MembroController {
         return new ResponseEntity<>(novoMembroSalvo, HttpStatus.CREATED);
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public ResponseEntity<Void> update(@RequestBody MembroUpdateDTO membroAlterado) {
         Optional<MembroEntity> membro = membroRepository.findById(membroAlterado.id());
         MembroEntity diaconoResponsavel = null;
@@ -107,7 +110,7 @@ public class MembroController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!this.membroRepository.existsById(id)) {
             return ResponseEntity.notFound().build();
