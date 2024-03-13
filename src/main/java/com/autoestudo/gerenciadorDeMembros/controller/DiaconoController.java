@@ -32,7 +32,7 @@ public class DiaconoController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping("/{diaconoId}")
+    @GetMapping("/supervisionados/{diaconoId}")
     public ResponseEntity<Page<DiaconoSummary>> findMembrosByDiacono(
             @PathVariable Long diaconoId,
             @RequestParam("page") int page,
@@ -47,5 +47,4 @@ public class DiaconoController {
 
         return ResponseEntity.ok(res);
     }
-
 }
